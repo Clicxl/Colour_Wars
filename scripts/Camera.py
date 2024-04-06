@@ -11,7 +11,6 @@ class Camera(pygame.sprite.Group):
     def update(self, dt):
         pass
 
-
     def draw(self, screen, group):
         screen.fill(COLORS["red"])
         group.draw(screen)

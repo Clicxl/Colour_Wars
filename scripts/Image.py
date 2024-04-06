@@ -14,7 +14,7 @@ class Image:
             img = pygame.transform.scale(
                 img, (img.get_width() * scale, img.get_height() * scale)
             )
-            images[str(file.split('.')[0])] = img
+            images[str(file.split(".")[0])] = img
         return images
 
     def get_animations(self, path):

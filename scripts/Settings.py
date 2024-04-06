@@ -21,5 +21,4 @@ INPUTS = {
     "escape": False,
 }
 
-LAYERS = ["background", "objects", "blocks",
-          "characters", "particles", "foreground"]
+LAYERS = ["background", "objects", "blocks", "characters", "particles", "foreground"]

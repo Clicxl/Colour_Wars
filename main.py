@@ -8,11 +8,10 @@ from scripts.States import *
 class Game:
     def __init__(self):
 
-        self.screen = pygame.display.set_mode(
-            (WIDTH, HEIGHT), pygame.SCALED)
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT), pygame.SCALED)
         self.clock = pygame.time.Clock()
         pygame.mouse.set_visible(False)
-        pygame.display.set_caption('Color Wars')
+        pygame.display.set_caption("Color Wars")
         self.running = True
         self.font = pygame.font.Font(FONT, SCALE * TILESIZE)
         self.states = []
@@ -36,7 +35,7 @@ class Game:
                     INPUTS["escape"] = True
                     self.running = False
                 elif event.key == K_SPACE:
-                    INPUTS['space'] = True
+                    INPUTS["space"] = True
 
             if event.type == pygame.KEYUP:
                 # KEYUP
@@ -44,7 +43,7 @@ class Game:
                 if event.key == K_ESCAPE:
                     INPUTS["escape"] = False
                 elif event.key == K_SPACE:
-                    INPUTS['space'] = False
+                    INPUTS["space"] = False
 
             # MOOUSEDOWN
 
@@ -72,8 +71,7 @@ class Game:
     ):
 
         surf = font.render(str(text), False, color)
-        rect = surf.get_rect(
-            center=pos) if centerlized else surf.get_rect(topleft=pos)
+        rect = surf.get_rect(center=pos) if centerlized else surf.get_rect(topleft=pos)
         self.screen.blit(surf, rect)
 
     def custom_crosshair(self):

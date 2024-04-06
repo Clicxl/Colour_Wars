@@ -15,24 +15,27 @@ class Tile(pygame.sprite.Sprite):
         self.rect = self.image.get_frect()
 
     def get_pos(self):
-        return [self.col, self.row]
+        return self.col, self.row
 
     def draw(self, screen):
         pass
 
     def update(self, dt):
-        try:
-            self.image = self.surfs[str(self.value)]
-        except KeyError:
-            self.image = self.surfs['0']
+        self.image = self.surfs[str(self.value)]
 
     def __repr__(self):
-        return f"Tile {self.col}x{self.row}"
+        return f"Tile {self.col}x{self.row} value: {self.value}"
 
-    def get_clicked(self,):
+    def get_clicked(
+        self,
+    ):
         mouse = pygame.mouse.get_pos()
-        if self.rect.collidepoint(mouse) and INPUTS['left_click'] and self.clicked == False:
+        if (
+            self.rect.collidepoint(mouse)
+            and INPUTS["left_click"]
+            and self.clicked == False
+        ):
             return True
 
-        elif INPUTS['left_click'] == False:
+        elif INPUTS["left_click"] == False:
             return False

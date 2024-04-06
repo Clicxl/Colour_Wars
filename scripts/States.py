@@ -20,8 +20,7 @@ class State:
     def debugger(self, defbug_list):
         for index, name in enumerate(defbug_list):
             self.game.render_font(
-                str(name), COLORS["white"], vec(
-                    10, 35 * index), self.game.font, False
+                str(name), COLORS["white"], vec(10, 35 * index), self.game.font, False
             )
 
     def draw(self, screen):
