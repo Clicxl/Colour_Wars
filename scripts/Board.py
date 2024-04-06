@@ -14,6 +14,7 @@ class Board:
         self.blue_first = False
 
     def create_board(self, size=5):
+        self.size = size
         self.board = []
         for i in range(size):
             self.board.append([])
@@ -48,23 +49,44 @@ class Board:
                 self.blue_first = True
 
     def tile_split(self, tile):
-        if tile.value > 4:
-            tile.value = 0
-            self.reset_input()
-            col, row = tile.get_pos()
-            self.board[col+1][row].value += 1
-            self.board[col-1][row].value += 1
-            self.board[col][row+1].value += 1
-            self.board[col][row-1].value += 1
+        col, row = tile.get_pos()
 
-        elif tile.value < -4:
-            tile.value = 0
+        if tile.value >= 4:
             self.reset_input()
-            col, row = tile.get_pos()
-            self.board[col+1][row].value -= 1
-            self.board[col-1][row].value -= 1
-            self.board[col][row+1].value -= 1
-            self.board[col][row-1].value -= 1
+            tile.value = 0
+            if self.board[col-1][row].value < 0 or self.board[col+1][row].value < 0:
+                self.board[col + 1][row].value = abs(self.board[col+1][row].value) + 1
+                self.board[col - 1][row].value = abs(self.board[col-1][row].value) + 1
+            else:
+                self.board[col+1][row].value += 1
+                self.board[col-1][row].value += 1
+
+            if self.board[col][row+1].value < 0 or self.board[col][row-1].value < 0:
+                self.board[col][row + 1].value = abs(self.board[col][row+1].value) + 1
+                self.board[col][row - 1].value = abs(self.board[col][row-1].value) + 1
+            else:
+                self.board[col][row+1].value += 1
+                self.board[col][row-1].value += 1
+
+        elif tile.value <= -4:
+            self.reset_input()
+            tile.value = 0
+
+            if self.board[col-1][row].value > 0 or self.board[col+1][row].value > 0:
+                self.board[col + 1][row].value = (self.board[col+1][row].value * -1) - 1
+                self.board[col - 1][row].value = (self.board[col-1][row].value* -1) - 1
+            else:
+                self.board[col+1][row].value -= 1
+                self.board[col-1][row].value -= 1
+
+            if self.board[col][row-1].value > 0 or self.board[col][row+1].value > 0:
+                self.board[col][row + 1].value = (self.board[col][row+1].value * -1) - 1
+                self.board[col][row - 1].value = (self.board[col][row-1].value* -1) - 1
+            else:
+                self.board[col][row+1].value -= 1
+                self.board[col][row-1].value -= 1
+
+
 
     def reset_input(self):
         for key in INPUTS:
