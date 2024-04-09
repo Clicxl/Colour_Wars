@@ -5,7 +5,7 @@ from scripts.Settings import *
 
 
 class Board:
-    def __init__(self, groups):
+    def __init__(self, groups, game):
         self.groups = groups
         self.load_surf("assets/Images/tiles")
         self.board_data = self.create_board()
@@ -32,17 +32,13 @@ class Board:
 
     def click_event(self, tile):
         if tile.get_clicked():
-            if self.player == "red" and (
-                self.red_first == False or tile.value > 0
-            ):
+            if self.player == "red" and (self.red_first == False or tile.value > 0):
                 tile.value += 1
                 self.player = "blue"
                 self.reset_input()
                 self.red_first = True
 
-            elif self.player == "blue" and (
-                self.blue_first == False or tile.value < 0
-            ):
+            elif self.player == "blue" and (self.blue_first == False or tile.value < 0):
                 tile.value -= 1
                 self.player = "red"
                 self.reset_input()
@@ -54,39 +50,62 @@ class Board:
         if tile.value >= 4:
             self.reset_input()
             tile.value = 0
-            if self.board[col-1][row].value < 0 or self.board[col+1][row].value < 0:
-                self.board[col + 1][row].value = abs(self.board[col+1][row].value) + 1
-                self.board[col - 1][row].value = abs(self.board[col-1][row].value) + 1
+            if self.board[col - 1][row].value < 0 or self.board[col + 1][row].value < 0:
+                self.board[col + 1][row].value = abs(self.board[col + 1][row].value) + 1
+                self.board[col - 1][row].value = abs(self.board[col - 1][row].value) + 1
             else:
-                self.board[col+1][row].value += 1
-                self.board[col-1][row].value += 1
+                self.board[col + 1][row].value += 1
+                self.board[col - 1][row].value += 1
 
-            if self.board[col][row+1].value < 0 or self.board[col][row-1].value < 0:
-                self.board[col][row + 1].value = abs(self.board[col][row+1].value) + 1
-                self.board[col][row - 1].value = abs(self.board[col][row-1].value) + 1
+            if self.board[col][row + 1].value < 0 or self.board[col][row - 1].value < 0:
+                self.board[col][row + 1].value = abs(self.board[col][row + 1].value) + 1
+                self.board[col][row - 1].value = abs(self.board[col][row - 1].value) + 1
             else:
-                self.board[col][row+1].value += 1
-                self.board[col][row-1].value += 1
+                self.board[col][row + 1].value += 1
+                self.board[col][row - 1].value += 1
 
         elif tile.value <= -4:
             self.reset_input()
             tile.value = 0
 
-            if self.board[col-1][row].value > 0 or self.board[col+1][row].value > 0:
-                self.board[col + 1][row].value = (self.board[col+1][row].value * -1) - 1
-                self.board[col - 1][row].value = (self.board[col-1][row].value* -1) - 1
+            if self.board[col - 1][row].value > 0 or self.board[col + 1][row].value > 0:
+                self.board[col + 1][row].value = (
+                    self.board[col + 1][row].value * -1
+                ) - 1
+                self.board[col - 1][row].value = (
+                    self.board[col - 1][row].value * -1
+                ) - 1
             else:
-                self.board[col+1][row].value -= 1
-                self.board[col-1][row].value -= 1
+                self.board[col + 1][row].value -= 1
+                self.board[col - 1][row].value -= 1
 
-            if self.board[col][row-1].value > 0 or self.board[col][row+1].value > 0:
-                self.board[col][row + 1].value = (self.board[col][row+1].value * -1) - 1
-                self.board[col][row - 1].value = (self.board[col][row-1].value* -1) - 1
+            if self.board[col][row - 1].value > 0 or self.board[col][row + 1].value > 0:
+                self.board[col][row + 1].value = (
+                    self.board[col][row + 1].value * -1
+                ) - 1
+                self.board[col][row - 1].value = (
+                    self.board[col][row - 1].value * -1
+                ) - 1
             else:
-                self.board[col][row+1].value -= 1
-                self.board[col][row-1].value -= 1
+                self.board[col][row + 1].value -= 1
+                self.board[col][row - 1].value -= 1
 
+    def win(self):
+        values = [tile.value for row in self.board for tile in row]
+        red = 0
+        blue = 0
 
+        if self.blue_first and self.red_first == True:
+            for x in values:
+                if x > 0:
+                    red += 1
+                elif x < 0:
+                    blue += 1
+
+        if red > 0 and blue == 0:
+            pass
+        elif blue > 0 and red == 0:
+            pass
 
     def reset_input(self):
         for key in INPUTS:
@@ -97,3 +116,4 @@ class Board:
             for tile in _:
                 self.click_event(tile)
                 self.tile_split(tile)
+                self.win()

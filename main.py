@@ -71,7 +71,8 @@ class Game:
     ):
 
         surf = font.render(str(text), False, color)
-        rect = surf.get_rect(center=pos) if centerlized else surf.get_rect(topleft=pos)
+        rect = surf.get_rect(
+            center=pos) if centerlized else surf.get_rect(topleft=pos)
         self.screen.blit(surf, rect)
 
     def custom_crosshair(self):

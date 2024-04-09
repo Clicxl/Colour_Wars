@@ -57,7 +57,7 @@ class Scene(State):
         self.update_sprites = pygame.sprite.Group()
         self.draw_sprites = pygame.sprite.Group()
 
-        self.board = Board([self.update_sprites, self.draw_sprites])
+        self.board = Board([self.update_sprites, self.draw_sprites],game)
 
     def draw(self, screen):
         self.camera.draw(screen, self.draw_sprites)
@@ -67,3 +67,17 @@ class Scene(State):
         self.update_sprites.update(dt)
         self.camera.update(dt)
         self.board.update(dt)
+
+
+class EndScreen(State):
+    def __init__(self,game):
+        super().__init__(game)
+
+    def draw(self,screen,winner,win_color):
+        screen.fill(COLORS[win_color])
+        self.game.render_font(
+            f"{winner} Won the Game",
+            COLORS["white"],
+            pygame.Vector2(WIDTH / 2, HEIGHT / 2),
+            self.game.font,
+        )
