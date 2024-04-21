@@ -33,6 +33,7 @@ class State:
 class SplashScreen(State):
     def __init__(self, game):
         super().__init__(game)
+        self.game = game
 
     def draw(self, screen):
         screen.fill(COLORS["blue"])
@@ -56,8 +57,9 @@ class Scene(State):
         self.camera = Camera(self)
         self.update_sprites = pygame.sprite.Group()
         self.draw_sprites = pygame.sprite.Group()
+        self.game = game
 
-        self.board = Board([self.update_sprites, self.draw_sprites],game)
+        self.board = Board([self.update_sprites, self.draw_sprites], game)
 
     def draw(self, screen):
         self.camera.draw(screen, self.draw_sprites)
@@ -67,17 +69,33 @@ class Scene(State):
         self.update_sprites.update(dt)
         self.camera.update(dt)
         self.board.update(dt)
+        if self.board.winner == "red":
+            EndScreen(self.game, "Red", COLORS["red"]).enter_state()
+        elif self.board.winner == "blue":
+            EndScreen(self.game, "Blue", COLORS["blue"]).enter_state()
 
 
 class EndScreen(State):
-    def __init__(self,game):
+    def __init__(self, game, winner, win_col):
         super().__init__(game)
 
-    def draw(self,screen,winner,win_color):
-        screen.fill(COLORS[win_color])
+        self.camera = Camera(self)
+        self.update_sprites = pygame.sprite.Group()
+        self.draw_sprites = pygame.sprite.Group()
+        self.winner = winner
+        self.win_col = win_col
+
+    def draw(self, screen):
+        screen.fill(self.win_col)
+        self.camera.draw(screen, self.draw_sprites)
         self.game.render_font(
-            f"{winner} Won the Game",
+            f"{self.winner} Won the Game",
             COLORS["white"],
             pygame.Vector2(WIDTH / 2, HEIGHT / 2),
             self.game.font,
         )
+        self.debugger([str(f"FPS: {self.game.clock.get_fps():.2f}")])
+
+    def update(self, dt):
+        self.update_sprites.update(dt)
+        self.camera.update(dt)

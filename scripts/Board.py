@@ -1,5 +1,5 @@
 import pygame
-from scripts.Image import Image
+from scripts.Utils import Image, Sound
 from scripts.Objects import Tile
 from scripts.Settings import *
 
@@ -12,6 +12,8 @@ class Board:
         self.player = "red"
         self.red_first = False
         self.blue_first = False
+        self.winner = None
+        self.sound = Sound()
 
     def create_board(self, size=5):
         self.size = size
@@ -32,80 +34,182 @@ class Board:
 
     def click_event(self, tile):
         if tile.get_clicked():
-            if self.player == "red" and (self.red_first == False or tile.value > 0):
+            if self.player == "red" and (
+                (self.red_first == False and tile.value == 0) or tile.value > 0
+            ):
                 tile.value += 1
                 self.player = "blue"
                 self.reset_input()
                 self.red_first = True
+                self.sound.play("assets/Audio/click.wav", vol=0.2, fade=0, loop=0)
 
-            elif self.player == "blue" and (self.blue_first == False or tile.value < 0):
+            elif self.player == "blue" and (
+                (self.blue_first == False and tile.value == 0) or tile.value < 0
+            ):
                 tile.value -= 1
                 self.player = "red"
                 self.reset_input()
                 self.blue_first = True
+                self.sound.play("assets/Audio/click.wav", vol=0.2, fade=0, loop=0)
 
     def tile_split(self, tile):
         col, row = tile.get_pos()
 
+        # Red
         if tile.value >= 4:
-            self.reset_input()
+            # Colums
+            if 0 < col < self.size - 1:
+                if self.board[col + 1][row].value < 0:
+                    self.board[col + 1][row].value = (
+                        abs(self.board[col + 1][row].value) + 1
+                    )
+                else:
+                    self.board[col + 1][row].value += 1
+
+                if self.board[col - 1][row].value < 0:
+                    self.board[col - 1][row].value = (
+                        abs(self.board[col - 1][row].value) + 1
+                    )
+                else:
+                    self.board[col - 1][row].value += 1
+
+            # Edges | Columns
+            elif col == 0:
+                if self.board[col + 1][row].value >= 0:
+                    self.board[col + 1][row].value += 1
+                elif self.board[col + 1][row].value < 0:
+                    self.board[col + 1][row].value = (
+                        abs(self.board[col + 1][row].value) + 1
+                    )
+
+            elif col == self.size - 1:
+                if self.board[col - 1][row].value >= 0:
+                    self.board[col - 1][row].value += 1
+                elif self.board[col - 1][row].value < 0:
+                    self.board[col - 1][row].value = (
+                        abs(self.board[col - 1][row].value) + 1
+                    )
+
+            # Rows
+            if 0 < row < self.size - 1:
+                if self.board[col][row + 1].value < 0:
+                    self.board[col][row + 1].value = (
+                        abs(self.board[col][row + 1].value) + 1
+                    )
+                else:
+                    self.board[col][row + 1].value += 1
+
+                if self.board[col][row - 1].value < 0:
+                    self.board[col][row - 1].value = (
+                        abs(self.board[col][row - 1].value) + 1
+                    )
+                else:
+                    self.board[col][row - 1].value += 1
+
+            # Edges | Rows
+            elif row == 0:
+                if self.board[col][row + 1].value >= 0:
+                    self.board[col][row + 1].value += 1
+                elif self.board[col][row + 1].value < 0:
+                    self.board[col][row + 1].value = (
+                        abs(self.board[col][row + 1].value) + 1
+                    )
+
+            elif row == self.size - 1:
+                if self.board[col][row - 1].value >= 0:
+                    self.board[col][row - 1].value += 1
+                elif self.board[col][row - 1].value < 0:
+                    self.board[col][row - 1].value = (
+                        abs(self.board[col][row - 1].value) + 1
+                    )
             tile.value = 0
-            if self.board[col - 1][row].value < 0 or self.board[col + 1][row].value < 0:
-                self.board[col + 1][row].value = abs(self.board[col + 1][row].value) + 1
-                self.board[col - 1][row].value = abs(self.board[col - 1][row].value) + 1
-            else:
-                self.board[col + 1][row].value += 1
-                self.board[col - 1][row].value += 1
 
-            if self.board[col][row + 1].value < 0 or self.board[col][row - 1].value < 0:
-                self.board[col][row + 1].value = abs(self.board[col][row + 1].value) + 1
-                self.board[col][row - 1].value = abs(self.board[col][row - 1].value) + 1
-            else:
-                self.board[col][row + 1].value += 1
-                self.board[col][row - 1].value += 1
+        # Blue
+        if tile.value == -4:
+            # Colums
+            if 0 < col < self.size - 1:
+                if self.board[col + 1][row].value > 0:
+                    self.board[col + 1][row].value = (
+                        -abs(self.board[col + 1][row].value) - 1
+                    )
+                else:
+                    self.board[col + 1][row].value -= 1
 
-        elif tile.value <= -4:
-            self.reset_input()
+                if self.board[col - 1][row].value > 0:
+                    self.board[col - 1][row].value = (
+                        -abs(self.board[col - 1][row].value) - 1
+                    )
+                else:
+                    self.board[col - 1][row].value -= 1
+
+            # Edges | Columns
+            elif col == 0:
+                if self.board[col + 1][row].value <= 0:
+                    self.board[col + 1][row].value -= 1
+                elif self.board[col + 1][row].value > 0:
+                    self.board[col + 1][row].value = (
+                        -abs(self.board[col + 1][row].value) - 1
+                    )
+
+            elif col == self.size - 1:
+                if self.board[col - 1][row].value <= 0:
+                    self.board[col - 1][row].value -= 1
+                elif self.board[col - 1][row].value > 0:
+                    self.board[col - 1][row].value = (
+                        -abs(self.board[col - 1][row].value) - 1
+                    )
+
+            # Rows
+            if 0 < row < self.size - 1:
+                if self.board[col][row + 1].value > 0:
+                    self.board[col][row + 1].value = (
+                        -abs(self.board[col][row + 1].value) - 1
+                    )
+                else:
+                    self.board[col][row + 1].value -= 1
+
+                if self.board[col][row - 1].value > 0:
+                    self.board[col][row - 1].value = (
+                        -abs(self.board[col][row - 1].value) - 1
+                    )
+                else:
+                    self.board[col][row - 1].value -= 1
+
+            # Edges | Rows
+            elif row == 0:
+                if self.board[col][row + 1].value <= 0:
+                    self.board[col][row + 1].value -= 1
+                elif self.board[col][row + 1].value > 0:
+                    self.board[col][row + 1].value = (
+                        -abs(self.board[col][row + 1].value) - 1
+                    )
+
+            elif row == self.size - 1:
+                if self.board[col][row - 1].value <= 0:
+                    self.board[col][row - 1].value -= 1
+                elif self.board[col][row - 1].value > 0:
+                    self.board[col][row - 1].value = (
+                        -abs(self.board[col][row - 1].value) - 1
+                    )
+
             tile.value = 0
-
-            if self.board[col - 1][row].value > 0 or self.board[col + 1][row].value > 0:
-                self.board[col + 1][row].value = (
-                    self.board[col + 1][row].value * -1
-                ) - 1
-                self.board[col - 1][row].value = (
-                    self.board[col - 1][row].value * -1
-                ) - 1
-            else:
-                self.board[col + 1][row].value -= 1
-                self.board[col - 1][row].value -= 1
-
-            if self.board[col][row - 1].value > 0 or self.board[col][row + 1].value > 0:
-                self.board[col][row + 1].value = (
-                    self.board[col][row + 1].value * -1
-                ) - 1
-                self.board[col][row - 1].value = (
-                    self.board[col][row - 1].value * -1
-                ) - 1
-            else:
-                self.board[col][row + 1].value -= 1
-                self.board[col][row - 1].value -= 1
 
     def win(self):
-        values = [tile.value for row in self.board for tile in row]
         red = 0
         blue = 0
 
-        if self.blue_first and self.red_first == True:
-            for x in values:
-                if x > 0:
-                    red += 1
-                elif x < 0:
-                    blue += 1
+        for col in self.board:
+            for tile in col:
+                if self.blue_first and self.red_first == True:
+                    if tile.value > 0:
+                        red += 1
+                    elif tile.value < 0:
+                        blue += 1
 
         if red > 0 and blue == 0:
-            pass
+            self.winner = "red"
         elif blue > 0 and red == 0:
-            pass
+            self.winner = "blue"
 
     def reset_input(self):
         for key in INPUTS:
@@ -116,4 +220,4 @@ class Board:
             for tile in _:
                 self.click_event(tile)
                 self.tile_split(tile)
-                self.win()
+        self.win()
