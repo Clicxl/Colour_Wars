@@ -12,5 +12,7 @@ class Camera(pygame.sprite.Group):
         pass
 
     def draw(self, screen, group):
-        screen.fill(COLORS["red"])
+        screen.blit(
+            pygame.image.load("assets/Images/Background.png").convert_alpha(), (0, 0)
+        )
         group.draw(screen)

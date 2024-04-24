@@ -1,5 +1,5 @@
 import pygame
-from scripts.Utils import Image, Sound
+from scripts.Utils import Image, play
 from scripts.Objects import Tile
 from scripts.Settings import *
 
@@ -13,7 +13,6 @@ class Board:
         self.red_first = False
         self.blue_first = False
         self.winner = None
-        self.sound = Sound()
 
     def create_board(self, size=5):
         self.size = size
@@ -41,7 +40,7 @@ class Board:
                 self.player = "blue"
                 self.reset_input()
                 self.red_first = True
-                self.sound.play("assets/Audio/click.wav", vol=0.2, fade=0, loop=0)
+                play("assets/Audio/click.wav", vol=VOLUME, fade=0, loop=0)
 
             elif self.player == "blue" and (
                 (self.blue_first == False and tile.value == 0) or tile.value < 0
@@ -50,7 +49,7 @@ class Board:
                 self.player = "red"
                 self.reset_input()
                 self.blue_first = True
-                self.sound.play("assets/Audio/click.wav", vol=0.2, fade=0, loop=0)
+                play("assets/Audio/click.wav", vol=VOLUME, fade=0, loop=0)
 
     def tile_split(self, tile):
         col, row = tile.get_pos()

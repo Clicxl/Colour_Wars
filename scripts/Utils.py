@@ -23,14 +23,10 @@ class Image:
             animation.update({file_name: []})
         return animation
 
-class Sound:
-    def __init__(self):
-        pygame.mixer.init()
 
-    def play(self,file,**kwargs):
-    # *kwargs => vol,fade=0,loop=0
-        mixer = pygame.mixer.Sound(file)
-        mixer.set_volume(kwargs['vol'])
-        mixer.fadeout(kwargs['fade'])
-        mixer.play(kwargs['loop'],kwargs['fade'])
-
+def play(file, **kwargs):
+    # **kwargs => vol,fade=0,loop=0
+    mixer = pygame.mixer.Sound(file)
+    mixer.set_volume(kwargs["vol"])
+    mixer.fadeout(kwargs["fade"])
+    mixer.play(kwargs["loop"], kwargs["fade"])
