@@ -1,4 +1,5 @@
 from pygame.math import Vector2 as vec
+from icecream import ic
 
 WIDTH, HEIGHT = 900, 900
 FPS = 60
@@ -20,6 +21,7 @@ INPUTS = {
     "left_click": False,
     "space": False,
     "escape": False,
+    'r':False
 }
 
 LAYERS = ["background", "objects", "blocks", "characters", "particles", "foreground"]

@@ -13,6 +13,7 @@ class Board:
         self.red_first = False
         self.blue_first = False
         self.winner = None
+        self.game = game
 
     def create_board(self, size=5):
         self.size = size
@@ -51,11 +52,12 @@ class Board:
                 self.blue_first = True
                 play("assets/Audio/click.wav", vol=VOLUME, fade=0, loop=0)
 
-    def tile_split(self, tile):
+    def tile_split(self, tile, dt):
         col, row = tile.get_pos()
-
         # Red
         if tile.value >= 4:
+            play("assets/Audio/split.wav", fade=0, vol=VOLUME, loop=0)
+
             # Colums
             if 0 < col < self.size - 1:
                 if self.board[col + 1][row].value < 0:
@@ -125,6 +127,8 @@ class Board:
 
         # Blue
         if tile.value == -4:
+            play("assets/Audio/split.wav", fade=0, vol=VOLUME, loop=0)
+
             # Colums
             if 0 < col < self.size - 1:
                 if self.board[col + 1][row].value > 0:
@@ -218,5 +222,6 @@ class Board:
         for _ in self.board:
             for tile in _:
                 self.click_event(tile)
-                self.tile_split(tile)
+                self.tile_split(tile, dt)
+
         self.win()

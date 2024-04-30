@@ -21,6 +21,8 @@ class Game:
 
         self.states.append(self.splash_screen)
 
+        play("assets/Audio/song.mp3", vol=VOLUME, fade=2, loop=1)
+
     def user_input(self):
         for event in pygame.event.get():
             if event.type == QUIT:
@@ -36,6 +38,8 @@ class Game:
                     self.running = False
                 elif event.key == K_SPACE:
                     INPUTS["space"] = True
+                elif event.key == K_r:
+                    INPUTS['r'] = True
 
             if event.type == pygame.KEYUP:
                 # KEYUP
@@ -44,6 +48,8 @@ class Game:
                     INPUTS["escape"] = False
                 elif event.key == K_SPACE:
                     INPUTS["space"] = False
+                elif event.key == K_r:
+                    INPUTS['r'] = False
 
             # MOOUSEDOWN
 
@@ -71,8 +77,7 @@ class Game:
     ):
 
         surf = font.render(str(text), False, color)
-        rect = surf.get_rect(
-            center=pos) if centerlized else surf.get_rect(topleft=pos)
+        rect = surf.get_rect(center=pos) if centerlized else surf.get_rect(topleft=pos)
         self.screen.blit(surf, rect)
 
     def custom_crosshair(self):

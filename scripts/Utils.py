@@ -1,5 +1,6 @@
 import pygame
 import os
+from random import randint
 
 
 class Image:
@@ -7,7 +8,7 @@ class Image:
         pass
 
     def get_images(self, path, scale=1):
-        images: list = {}
+        images: dict = {}
         for file in os.listdir(path):
             full_path = os.path.join(path, file)
             img = pygame.image.load(full_path).convert_alpha()
@@ -29,4 +30,4 @@ def play(file, **kwargs):
     mixer = pygame.mixer.Sound(file)
     mixer.set_volume(kwargs["vol"])
     mixer.fadeout(kwargs["fade"])
-    mixer.play(kwargs["loop"], kwargs["fade"])
+    mixer.play(kwargs["loop"], fade_ms =    kwargs["fade"])

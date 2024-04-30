@@ -3,6 +3,7 @@ from scripts.Settings import *
 from scripts.Camera import *
 from scripts.Board import *
 from scripts.Objects import *
+from scripts.Utils import play
 
 
 class State:
@@ -34,17 +35,30 @@ class SplashScreen(State):
     def __init__(self, game):
         super().__init__(game)
         self.game = game
+        self.load_images()
+        self.update_sprites = pygame.sprite.Group()
+        self.draw_sprites = pygame.sprite.Group()
+
+        self.logo = Logo([self.update_sprites, self.draw_sprites])
+
+    def load_images(self):
+
+        self.bg = pygame.image.load("assets/Images/Background.png").convert_alpha()
+        self.bg_rect = self.bg.get_frect(topleft=vec(0, 0))
 
     def draw(self, screen):
-        screen.fill(COLORS["blue"])
+        screen.blit(self.bg, self.bg_rect)
+        self.draw_sprites.draw(screen)
         self.game.render_font(
-            "Splash Screen: Press Space",
+            "Press Space To Start",
             COLORS["white"],
-            pygame.Vector2(WIDTH / 2, HEIGHT / 2),
+            vec(WIDTH / 2, 2 * HEIGHT / 3),
             self.game.font,
         )
 
     def update(self, dt):
+        self.logo.update(dt)
+
         if INPUTS["space"] == True:
             Scene(self.game).enter_state()
             self.game.reset_input()
@@ -66,6 +80,7 @@ class Scene(State):
         self.debugger([str(f"FPS: {self.game.clock.get_fps():.2f}")])
 
     def update(self, dt):
+
         self.update_sprites.update(dt)
         self.camera.update(dt)
         self.board.update(dt)
@@ -84,6 +99,7 @@ class EndScreen(State):
         self.draw_sprites = pygame.sprite.Group()
         self.winner = winner
         self.win_col = win_col
+        play("assets/Audio/End.wav", vol=VOLUME * 5, fade=1, loop=0)
 
     def draw(self, screen):
         screen.fill(self.win_col)
@@ -96,6 +112,22 @@ class EndScreen(State):
         )
         self.debugger([str(f"FPS: {self.game.clock.get_fps():.2f}")])
 
+        self.game.render_font(
+            "Press 'R' to Restart",
+            COLORS["yellow"],
+            vec(WIDTH / 2, 2 * HEIGHT / 3),
+            self.game.font,
+        )
+        self.game.render_font(
+            "Game By Clicxl",
+            COLORS["white"],
+            vec(WIDTH / 2, 3 * HEIGHT / 4),
+            self.game.font,
+        )
+
     def update(self, dt):
         self.update_sprites.update(dt)
         self.camera.update(dt)
+        if INPUTS["r"]:
+            Scene(self.game).enter_state()
+            self.game.reset_input()
